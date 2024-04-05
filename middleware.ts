@@ -5,6 +5,7 @@ export default authMiddleware({
     "/",
     "/favicon.ico",
     "events/:id",
+    "/api/webhook(.*)",
     "/api/webhook/clerk",
     "/api/webhook/stripe",
     "/api/uploadthing",
@@ -15,6 +16,7 @@ export default authMiddleware({
   ],
   ignoredRoutes: [
     "/favicon.ico",
+    "/api/webhook(.*)",
     "/api/webhook/clerk",
     "/api/webhook/stripe",
     "/api/uploadthing",
