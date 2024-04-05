@@ -1,10 +1,10 @@
 "use server"
 
 import Stripe from 'stripe';
-import { CheckoutOrderParams, CreateOrderParams, GetOrdersByEventParams, GetOrdersByUserParams } from "@/types"
-import { redirect } from 'next/navigation';
-import { handleError } from '../utils';
-import { connectToDatabase } from '../database';
+import {CheckoutOrderParams, CreateOrderParams, GetOrdersByEventParams, GetOrdersByUserParams} from "@/types"
+import {redirect} from 'next/navigation';
+import {handleError} from '../utils';
+import {connectToDatabase} from '../database';
 import Order from '../database/models/order.model';
 import Event from '../database/models/event.model';
 import {ObjectId} from 'mongodb';
@@ -20,7 +20,7 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
       line_items: [
         {
           price_data: {
-            currency: 'usd',
+            currency: 'inr',
             unit_amount: price,
             product_data: {
               name: order.eventTitle
@@ -47,7 +47,7 @@ export const checkoutOrder = async (order: CheckoutOrderParams) => {
 export const createOrder = async (order: CreateOrderParams) => {
   try {
     await connectToDatabase();
-    
+
     const newOrder = await Order.create({
       ...order,
       event: order.eventId,
@@ -61,7 +61,7 @@ export const createOrder = async (order: CreateOrderParams) => {
 }
 
 // GET ORDERS BY EVENT
-export async function getOrdersByEvent({ searchString, eventId }: GetOrdersByEventParams) {
+export async function getOrdersByEvent({searchString, eventId}: GetOrdersByEventParams) {
   try {
     await connectToDatabase()
 
@@ -105,7 +105,7 @@ export async function getOrdersByEvent({ searchString, eventId }: GetOrdersByEve
       },
       {
         $match: {
-          $and: [{ eventId: eventObjectId }, { buyer: { $regex: RegExp(searchString, 'i') } }],
+          $and: [{eventId: eventObjectId}, {buyer: {$regex: RegExp(searchString, 'i')}}],
         },
       },
     ])
@@ -117,16 +117,16 @@ export async function getOrdersByEvent({ searchString, eventId }: GetOrdersByEve
 }
 
 // GET ORDERS BY USER
-export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUserParams) {
+export async function getOrdersByUser({userId, limit = 3, page}: GetOrdersByUserParams) {
   try {
     await connectToDatabase()
 
     const skipAmount = (Number(page) - 1) * limit
-    const conditions = { buyer: userId }
+    const conditions = {buyer: userId}
 
     const orders = await Order.distinct('event._id')
       .find(conditions)
-      .sort({ createdAt: 'desc' })
+      .sort({createdAt: 'desc'})
       .skip(skipAmount)
       .limit(limit)
       .populate({
@@ -141,7 +141,7 @@ export async function getOrdersByUser({ userId, limit = 3, page }: GetOrdersByUs
 
     const ordersCount = await Order.distinct('event._id').countDocuments(conditions)
 
-    return { data: JSON.parse(JSON.stringify(orders)), totalPages: Math.ceil(ordersCount / limit) }
+    return {data: JSON.parse(JSON.stringify(orders)), totalPages: Math.ceil(ordersCount / limit)}
   } catch (error) {
     handleError(error)
   }

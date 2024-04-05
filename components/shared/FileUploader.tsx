@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { useCallback, Dispatch, SetStateAction } from 'react'
 import type { FileWithPath } from '@uploadthing/react'
